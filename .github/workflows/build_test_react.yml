@@ -47,6 +47,20 @@ jobs:
           start: pnpm dev
           wait-on: 'http://localhost:5173/Test_cycle_TDD/'
 
+      - name: build and publish package on NPM
+        run: |
+          cd app
+          git config --global user.email "elias93.benrejm@gmail.com"
+          git config --global user.name "Zen53"
+          pnpm run build-npm-ci
+          npm version patch
+          npm publish
+          git add .
+          git commit -m "updated version"
+          git push
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:

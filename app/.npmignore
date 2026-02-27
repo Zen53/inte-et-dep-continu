@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Development files
+src/
+test/
+cypress/
+.github/
+public/
+dist-ssr/
+
+# Build and testing
+coverage/
+*.local
+
+# Configuration files
+.gitignore
+.eslintignore
+eslint.config.js
+jest.config.cjs
+babel.config.cjs
+vite.config.js
+cypress.config.js
+jsdoc.json
+
+# IDE
+.vscode/
+.idea/
+*.suo
+.DS_Store
+
+# Documentation
+README.md
+TEST_PLAN.md
+*.iml
+
+# CI/CD
+.github/
+
+# Source/development artifacts
+*.jsx
+*.css
