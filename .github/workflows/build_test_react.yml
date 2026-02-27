@@ -47,6 +47,13 @@ jobs:
           start: pnpm dev
           wait-on: 'http://localhost:5173/Test_cycle_TDD/'
 
+      - name: Setup NPM authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          cat ~/.npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: build and publish package on NPM
         run: |
           cd app
