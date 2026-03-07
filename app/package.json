@@ -1,10 +1,17 @@
 {
-  "name": "app",
+  "name": "@zen53/inte-dep-continu",
   "private": false,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "main": "dist/index.js",
-  "homepage": "https://github.com/Ynov-M1/Test_cycle_TD/app",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zen53/inte-et-dep-continu.git"
+  },
+  "homepage": "https://github.com/Zen53/inte-et-dep-continu",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

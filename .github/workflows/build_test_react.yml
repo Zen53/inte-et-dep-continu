@@ -5,7 +5,10 @@ on:
     branches: [master]
 
 jobs:
-  build_test:
+  # ──────────────────────────────────────────────
+  # Job 1 : Build, Test & Coverage
+  # ──────────────────────────────────────────────
+  build-and-test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -47,27 +50,6 @@ jobs:
           start: pnpm dev
           wait-on: 'http://localhost:5173/Test_cycle_TDD/'
 
-      - name: Setup NPM authentication
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-          cat ~/.npmrc
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: build and publish package on NPM
-        run: |
-          cd app
-          git config --global user.email "elias93.benrejm@gmail.com"
-          git config --global user.name "Zen53"
-          pnpm run build-npm-ci
-          npm version patch
-          npm publish
-          git add .
-          git commit -m "updated version"
-          git push
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -84,8 +66,88 @@ jobs:
         with:
           path: ./app/dist
 
+  # ──────────────────────────────────────────────
+  # Job 2 : Publish to NPM (with SemVer bypass)
+  # ──────────────────────────────────────────────
+  publish-npm:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          registry-url: https://registry.npmjs.org/
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: cd app && pnpm install --no-frozen-lockfile
+
+      - name: Check if publish is needed (SemVer bypass)
+        id: version-check
+        run: |
+          cd app
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          echo "Local version: $LOCAL_VERSION"
+          echo "Package name: $PACKAGE_NAME"
+
+          # Try to get the published version from NPM
+          PUBLISHED_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || echo "0.0.0")
+          echo "Published version: $PUBLISHED_VERSION"
+
+          # Compare versions using node semver logic
+          SHOULD_PUBLISH=$(node -e "
+            const local = '$LOCAL_VERSION';
+            const published = '$PUBLISHED_VERSION';
+            const [lMajor, lMinor, lPatch] = local.split('.').map(Number);
+            const [pMajor, pMinor, pPatch] = published.split('.').map(Number);
+            const isNewer = lMajor > pMajor || 
+              (lMajor === pMajor && lMinor > pMinor) || 
+              (lMajor === pMajor && lMinor === pMinor && lPatch > pPatch);
+            console.log(isNewer ? 'true' : 'false');
+          ")
+
+          echo "Should publish: $SHOULD_PUBLISH"
+          echo "should_publish=$SHOULD_PUBLISH" >> $GITHUB_OUTPUT
+          echo "local_version=$LOCAL_VERSION" >> $GITHUB_OUTPUT
+          echo "published_version=$PUBLISHED_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build NPM package
+        if: steps.version-check.outputs.should_publish == 'true'
+        run: cd app && pnpm run build-npm-ci
+
+      - name: Setup NPM authentication
+        if: steps.version-check.outputs.should_publish == 'true'
+        run: echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to NPM
+        if: steps.version-check.outputs.should_publish == 'true'
+        run: |
+          cd app
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Skip publish (version unchanged)
+        if: steps.version-check.outputs.should_publish != 'true'
+        run: |
+          echo "⏭️ Publication skipped: local version (${{ steps.version-check.outputs.local_version }}) is not newer than published version (${{ steps.version-check.outputs.published_version }})"
+
+  # ──────────────────────────────────────────────
+  # Job 3 : Deploy to GitHub Pages
+  # ──────────────────────────────────────────────
   deploy:
-    needs: build_test
+    needs: publish-npm
     permissions:
       pages: write
       id-token: write

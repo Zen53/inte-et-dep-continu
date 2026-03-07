@@ -124,8 +124,30 @@ pnpm run doc
 
 ## Pipeline CI/CD
 
-- Build de l’application via Vite
-- Exécution des tests unitaires, d’intégration et E2E (Cypress headless)
+Le pipeline est structuré en **3 jobs en cascade** :
+
+1. **build-and-test** : Build de l'application via Vite, exécution des tests unitaires, d'intégration et E2E (Cypress headless), upload des rapports de couverture vers Codecov.
+2. **publish-npm** : Vérifie si la version locale est supérieure à celle publiée sur NPM (logique de bypass SemVer). Publie uniquement si nécessaire, sinon skip sans faire échouer le pipeline.
+3. **deploy** : Déploiement sur GitHub Pages si tous les jobs précédents réussissent.
+
+### Package NPM
+
+Le composant `PersonForm` est distribué en tant que package NPM :
+
+- **Package NPM** : https://www.npmjs.com/package/@zen53/inte-dep-continu
+
+Installation :
+```
+npm install @zen53/inte-dep-continu
+```
+
+### Semantic Versioning
+
+Le projet suit les règles du [Semantic Versioning](https://semver.org/) :
+- **Patch** (x.x.X) : Correctifs de bugs
+- **Minor** (x.X.0) : Ajout de fonctionnalités rétrocompatibles
+- **Major** (X.0.0) : Rupture de compatibilité
+
 - Aucun appel réseau réel : Axios mocké en tests unitaires et cy.intercept en E2E
 - Upload des rapports de couverture vers Codecov
 - Déploiement sur GitHub Pages si tous les tests passentement storage permet de synchroniser l’état entre plusieurs onglets/fenêtres : si un utilisateur est ajouté dans un onglet, la liste se met à jour automatiquement dans les autres.

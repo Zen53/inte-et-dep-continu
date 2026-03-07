@@ -8,7 +8,6 @@ yarn.lock
 src/
 test/
 cypress/
-.github/
 public/
 dist-ssr/
 
@@ -25,6 +24,7 @@ babel.config.cjs
 vite.config.js
 cypress.config.js
 jsdoc.json
+index.html
 
 # IDE
 .vscode/
@@ -41,5 +41,4 @@ TEST_PLAN.md
 .github/
 
 # Source/development artifacts
-*.jsx
 *.css
