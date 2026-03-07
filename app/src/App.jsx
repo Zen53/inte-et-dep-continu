@@ -60,7 +60,7 @@ function App() {
         <BrowserRouter basename="/Test_cycle_TDD/">
             <Routes>
                 <Route path="/" element={<Home persons={persons} loading={loading} serverError={serverError}/>} />
-                <Route path="/register" element={<Register addPerson={addPerson} />} />
+                <Route path="/register" element={<Register onSubmit={addPerson} />} />
             </Routes>
         </BrowserRouter>
     );

@@ -15,11 +15,11 @@ import './PersonForm.css'
  * @component
  *
  * @param {Object} props
- * @param {function(Object): void} props.addPerson - Callback function to add a person object to parent state or storage
+ * @param {function(Object): void} props.onSubmit - Callback function called when a valid person is submitted
  *
  * @returns {JSX.Element} The rendered registration form
  */
-export default function PersonForm({addPerson}) {
+export default function PersonForm({onSubmit}) {
     const [form, setForm] = useState({
         firstName: '',
         lastName: '',
@@ -104,7 +104,7 @@ export default function PersonForm({addPerson}) {
                 city: form.city
             }
             validatePerson(person)
-            await addPerson(person)
+            await onSubmit(person)
             toast.success("Enregistré avec succès !", {
                 toastId: "success-toast"
             });
