@@ -26,7 +26,7 @@ export const errorMessages = {
     INVALID_DATE: "La date de naissance est invalide",
     BIRTHDATE_TOO_OLD: "La date de naissance est trop ancienne",
     XSS_DETECTED: "Caractères interdits détectés",
-    SERVER_ERROR: "Serveur indisponible, réessayez plus tard"
+    SERVER_ERROR: "Le serveur est temporairement indisponible, veuillez réessayer plus tard"
 };
 
 /**
