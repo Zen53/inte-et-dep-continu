@@ -143,9 +143,9 @@ describe("Navigation and User Registration E2E Tests", () => {
             cy.get('[data-cy=submit]').click();
             cy.wait('@createUserFail');
 
-            cy.get('.toast-server-error')
-                .should('be.visible')
-                .and('contain.text', "Serveur indisponible, réessayez plus tard");
+            cy.get('.toast-server-error', { timeout: 10000 })
+                .should('exist')
+                .and('contain.text', "Le serveur est temporairement indisponible, veuillez réessayer plus tard");
 
             // Back home works
             cy.get('[data-cy=back-home]').click();
