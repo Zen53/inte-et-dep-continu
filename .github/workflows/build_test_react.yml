@@ -171,7 +171,6 @@ jobs:
             --name test-mysql \
             --network test-network \
             -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
-            -e MYSQL_DATABASE=ynov_ci \
             migration_mysql
 
       - name: Wait for MySQL to be ready
