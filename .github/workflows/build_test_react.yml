@@ -171,26 +171,31 @@ jobs:
             --name test-mysql \
             --network test-network \
             -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
+            -e MYSQL_DATABASE=ynov_ci \
             migration_mysql
 
       - name: Wait for MySQL to be ready
         run: |
           echo "Waiting for MySQL to initialize..."
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             if docker exec test-mysql mysqladmin ping -h localhost -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }} --silent 2>/dev/null; then
               echo "MySQL is ready!"
               break
             fi
-            echo "Attempt $i/30 - MySQL not ready yet..."
-            sleep 3
+            echo "Attempt $i/60 - MySQL not ready yet..."
+            sleep 2
           done
+
+      - name: Show MySQL container logs
+        if: always()
+        run: docker logs test-mysql 2>&1 | tail -50 || true
 
       - name: Start API container
         run: |
           docker run -d \
             --name test-api \
             --network test-network \
-            --restart=on-failure:15 \
+            --restart=on-failure:30 \
             -p 8000:8000 \
             -e MYSQL_HOST=test-mysql \
             -e MYSQL_USER=root \
