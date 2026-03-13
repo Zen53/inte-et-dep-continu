@@ -134,11 +134,11 @@ Le pipeline est structuré en **3 jobs en cascade** :
 
 Le composant `PersonForm` est distribué en tant que package NPM :
 
-- **Package NPM** : https://www.npmjs.com/package/@zen53/inte-dep-continu
+- **Package NPM** : https://www.npmjs.com/package/@zen533/inte-dep-continu
 
 Installation :
 ```
-npm install @zen53/inte-dep-continu
+npm install @zen533/inte-dep-continu
 ```
 
 ### Semantic Versioning
