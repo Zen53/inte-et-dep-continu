@@ -190,6 +190,7 @@ jobs:
           docker run -d \
             --name test-api \
             --network test-network \
+            --restart=on-failure:15 \
             -p 8000:8000 \
             -e MYSQL_HOST=test-mysql \
             -e MYSQL_USER=root \
